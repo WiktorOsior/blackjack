@@ -71,13 +71,9 @@ const cards = [
 function App() {
 
     const [selected_list, setSelected] = useState([]);
-    const list_of_card_lists = []
+    const list_of_card_lists = ["d","p","p"]
 
-    const cards_list_dealer = create_list(0, "d");
-    const cards_list_player1 = create_list(1, "p");
-    const cards_list_player2 = create_list(2, "p");
-
-    function create_list(id, whose) {
+    function create_list(id) {
         let list = cards.map(card =>
             <div key={card.name}>
                 <input
@@ -91,19 +87,21 @@ function App() {
                     }}
                     checked={selected_list[id] === card.name}
                 />
-                <label htmlFor={card.name+id}>
-                    <img className="card_icon" src={card.img} alt={card.name} id={card.name +id+ "img"}/>
+                <label htmlFor={card.name + id}>
+                    <img className="card_icon" src={card.img} alt={card.name} id={card.name + id + "img"}/>
                 </label>
             </div>);
-        list_of_card_lists[id] = whose;
         return list;
     }
 
     const handleChecking = (card_name, id) => {
         let img;
 
-        if (selected_list.length <= id){
-            let x = [...selected_list,""];
+        if (selected_list.length <= id) {
+            let x = [...selected_list];
+            while (x.length <= id) {
+                x = [...x, ""];
+            }
             let new_list = x.map((c, i) => {
                 if (i === id) {
                     return card_name;
@@ -114,11 +112,21 @@ function App() {
             setSelected(new_list);
             img = document.getElementById(card_name + id + "img");
             img.style.boxShadow = "0 0 12px 5px #61dafbaa"
-            return;
-        }
-        if (selected_list[id] !== "") {
-            img = document.getElementById(selected_list[id] +id+ "img");
+        } else if (selected_list[id] !== "") {
+            img = document.getElementById(selected_list[id] + id + "img");
             img.style.boxShadow = "none"
+            const new_list = selected_list.map((c, i) => {
+                    if (i === id) {
+                        return card_name;
+                    } else {
+                        return c;
+                    }
+                }
+            )
+            setSelected(new_list);
+            img = document.getElementById(card_name + id + "img");
+            img.style.boxShadow = "0 0 12px 5px #61dafbaa"
+        } else {
             const new_list = selected_list.map((c, i) => {
                     if (i === id) {
                         return card_name;
@@ -135,21 +143,20 @@ function App() {
 
 
     function checkUpdates() {
-        if (selected_list.length >= 3) {
+        if (!selected_list.includes("")&&selected_list.length>=3) {
             handleSubbmision();
         }
     }
 
     useEffect(() => {
         checkUpdates();
-        console.log("updated list",selected_list);
+        console.log("updated list", selected_list);
     }, [selected_list]);
 
     function handleSubbmision() {
         let player_sum = 0;
         let dealer_sum = 0;
         let dealer = 0, player1 = 0, player2 = 0;
-        console.log(list_of_card_lists);
         list_of_card_lists.map((c, i) => {
             const card_value = document.querySelector(`input[name="card${i}"]:checked`).value
             if (c === "p") {
@@ -168,6 +175,17 @@ function App() {
         })
         const display = document.getElementById('display')
         display.innerHTML = `Dealer: ${dealer_sum} Player: ${player_sum} ${tell_best_move(dealer, player1, player2)}`
+    }
+
+    function renderLists(whose) {
+        let count = list_of_card_lists.length, list = [];
+        console.log(list_of_card_lists);
+        for(let i=0; i<count;i++) {
+            if (list_of_card_lists[i] === whose) {
+                list.push(<div className="cards_list_all" id={"d "+i}>{create_list(i)}</div>)
+            }
+        }
+        return list;
     }
 
     function tell_best_move(dealer, player1, player2) {
@@ -204,10 +222,13 @@ function App() {
         <>
             <form>
                 <h1>Enter dealers card</h1>
-                <div id="card_list_dealer" className="cards_list_all">{cards_list_dealer}</div>
+                <div id="dealer-lists">
+                    {renderLists("d")}
+                </div>
                 <h1>Enter player card</h1>
-                <div id="card_list_player1" className="cards_list_all">{cards_list_player1}</div>
-                <div id="card_list_player1" className="cards_list_all">{cards_list_player2}</div>
+                <div id="players-lists">
+                    {renderLists("p")}
+                </div>
             </form>
             <div id="display"></div>
             <button onClick={() => window.location.reload()}></button>
