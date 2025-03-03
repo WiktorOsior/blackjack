@@ -70,109 +70,104 @@ const cards = [
 
 function App() {
 
-    const [selected1, setSelected1] = useState("")
-    const [selected2, setSelected2] = useState("")
-    const [selected3, setSelected3] = useState("")
+    const [selected_list, setSelected] = useState([]);
+    const list_of_card_lists = []
 
-    const handleChecking = async (id, version) => {
-        if (version === 1) {
-            let img;
-            if (selected1 !== "") {
-                img = document.getElementById(selected1 + "img");
-                img.style.boxShadow = "none"
-            }
-            setSelected1(id);
-            img = document.getElementById(id + "img");
-            img.style.boxShadow = "0 0 12px 5px #61dafbaa"
-        } else if (version === 2) {
-            let img;
-            if (selected2 !== "") {
-                img = document.getElementById(selected2 + "img");
-                img.style.boxShadow = "none"
-            }
-            setSelected2(id);
+    const cards_list_dealer = create_list(0, "d");
+    const cards_list_player1 = create_list(1, "p");
+    const cards_list_player2 = create_list(2, "p");
 
-            img = document.getElementById(id + "img");
+    function create_list(id, whose) {
+        let list = cards.map(card =>
+            <div key={card.name}>
+                <input
+                    name={"card" + id}
+                    type="radio"
+                    id={card.name + id}
+                    value={card.value}
+                    className="inputs"
+                    onChange={() => {
+                        handleChecking(card.name, id);
+                    }}
+                    checked={selected_list[id] === card.name}
+                />
+                <label htmlFor={card.name+id}>
+                    <img className="card_icon" src={card.img} alt={card.name} id={card.name +id+ "img"}/>
+                </label>
+            </div>);
+        list_of_card_lists[id] = whose;
+        return list;
+    }
+
+    const handleChecking = (card_name, id) => {
+        let img;
+
+        if (selected_list.length <= id){
+            let x = [...selected_list,""];
+            let new_list = x.map((c, i) => {
+                if (i === id) {
+                    return card_name;
+                } else {
+                    return c;
+                }
+            })
+            setSelected(new_list);
+            img = document.getElementById(card_name + id + "img");
             img.style.boxShadow = "0 0 12px 5px #61dafbaa"
-        } else if (version === 3) {
-            let img;
-            if (selected3 !== "") {
-                img = document.getElementById(selected3 + "img");
-                img.style.boxShadow = "none"
-            }
-            setSelected3(id);
-            img = document.getElementById(id + "img");
+            return;
+        }
+        if (selected_list[id] !== "") {
+            img = document.getElementById(selected_list[id] +id+ "img");
+            img.style.boxShadow = "none"
+            const new_list = selected_list.map((c, i) => {
+                    if (i === id) {
+                        return card_name;
+                    } else {
+                        return c;
+                    }
+                }
+            )
+            setSelected(new_list);
+            img = document.getElementById(card_name + id + "img");
             img.style.boxShadow = "0 0 12px 5px #61dafbaa"
         }
     }
 
 
     function checkUpdates() {
-        if (selected1 !== "" && selected2 !== "" && selected3 !== "") {
+        if (selected_list.length >= 3) {
             handleSubbmision();
         }
     }
 
     useEffect(() => {
         checkUpdates();
-    }, [selected1,selected2,selected3]);
-
-    const cards_list_dealer = cards.map(card =>
-        <div key={card.name}>
-            <input
-                name="card1"
-                type="radio"
-                id={card.name}
-                value={card.value}
-                className="inputs"
-                onChange={() => {handleChecking(card.name, 1); console.log(selected1)}}
-                checked={card.name === selected1}
-            />
-            <label htmlFor={card.name}>
-                <img className="card_icon" src={card.img} alt={card.name} id={card.name + "img"}/>
-            </label>
-        </div>
-    );
-    const cards_list_player1 = cards.map(card =>
-        <div key={card.name + " 2"}>
-            <input
-                name="card2"
-                type="radio"
-                id={card.name + " 2"}
-                value={card.value}
-                className="inputs"
-                onChange={() => {handleChecking(card.name + " 2", 2); checkUpdates()}}
-                checked={card.name + " 2" === selected2}
-            />
-            <label htmlFor={card.name + " 2"}>
-                <img className="card_icon" src={card.img} alt={card.name} id={card.name + " 2img"}/>
-            </label>
-        </div>
-    );
-    const cards_list_player2 = cards.map(card =>
-        <div key={card.name + " 3"}>
-            <input
-                name="card3"
-                type="radio"
-                id={card.name + " 3"}
-                value={card.value}
-                className="inputs"
-                onChange={() => handleChecking(card.name + " 3", 3)}
-                checked={card.name + " 3" === selected3}
-            />
-            <label htmlFor={card.name + " 3"}>
-                <img className="card_icon" src={card.img} alt={card.name} id={card.name + " 3img"}/>
-            </label>
-        </div>
-    );
+        console.log("updated list",selected_list);
+    }, [selected_list]);
 
     function handleSubbmision() {
-        //event.preventDefault()
-        const dealer = document.querySelector('input[name="card1"]:checked').value
-        const player1 = document.querySelector('input[name="card2"]:checked').value
-        const player2 = document.querySelector('input[name="card3"]:checked').value
+        let player_sum = 0;
+        let dealer_sum = 0;
+        let dealer = 0, player1 = 0, player2 = 0;
+        console.log(list_of_card_lists);
+        list_of_card_lists.map((c, i) => {
+            const card_value = document.querySelector(`input[name="card${i}"]:checked`).value
+            if (c === "p") {
+                player_sum += parseInt(card_value);
+                if (player1 === 0) {
+                    player1 = parseInt(card_value);
+                } else if (player2 === 0) {
+                    player2 = parseInt(card_value)
+                }
+            } else {
+                dealer_sum += parseInt(card_value);
+                if (dealer === 0) {
+                    dealer = parseInt(card_value);
+                }
+            }
+        })
         const display = document.getElementById('display')
-        display.innerHTML = `Dealer: ${dealer} Player: ${player1} ${player2} ${tell_best_move(dealer, player1, player2)}`
+        display.innerHTML = `Dealer: ${dealer_sum} Player: ${player_sum} ${tell_best_move(dealer, player1, player2)}`
     }
 
     function tell_best_move(dealer, player1, player2) {
@@ -215,9 +210,10 @@ function App() {
                 <div id="card_list_player1" className="cards_list_all">{cards_list_player2}</div>
             </form>
             <div id="display"></div>
-            <button onClick={()=>window.location.reload()}></button>
+            <button onClick={() => window.location.reload()}></button>
         </>
     )
 }
+
 
 export default App
