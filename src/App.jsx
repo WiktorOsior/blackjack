@@ -176,9 +176,9 @@ function App() {
             }
         })
         const display = document.getElementById('display')
-        if(player_sum>21||dealer_sum>21){
+        if (player_sum > 21 || dealer_sum > 21) {
             display.innerHTML = `Dealer: ${dealer_sum} Player: ${player_sum} BUSTED!`;
-        }else{
+        } else {
             display.innerHTML = `Dealer: ${dealer_sum} Player: ${player_sum} ${tellBestMove(dealer_cards, dealer_sum, player_cards, player_sum)}`;
         }
     }
@@ -194,12 +194,12 @@ function App() {
     }
 
     function tellBestMove(dealer_cards, dealer_sum_b, player_cards, player_sum) {
-        let dealer_sum=dealer_sum_b;
-        if(dealer_sum_b>12){
+        let dealer_sum = dealer_sum_b;
+        if (dealer_sum_b > 12) {
             dealer_sum = 11;
         }
         if (player_cards.length > 2 && player_cards.includes(11)) {
-                return searchAces(dealer_sum, player_sum);
+            return searchAces(dealer_sum, player_sum);
         }
         if (player_cards[0] === player_cards[1]) {
             return searchPairs(dealer_cards[0], player_cards[0]);
@@ -253,9 +253,13 @@ function App() {
                 </div>
             </form>
             <div id="display"></div>
-            <button onClick={() => window.location.reload()}>Reset</button>
-            <button onClick={() => setRecord([...lists_record, "d"])}>Dealer</button>
-            <button onClick={() => setRecord([...lists_record, "p"])}>Player</button>
+            <div id="buttons">
+                < div id="buttons-row-1">
+                    <button id="player-add-button" onClick={() => setRecord([...lists_record, "p"])}>Player</button>
+                    <button id="dealer-add-button" onClick={() => setRecord([...lists_record, "d"])}>Dealer</button>
+                </div>
+                <button id="reset-button" onClick={() =>window.location.reload() }>Reset</button>
+            </div>
         </>
     )
 }
