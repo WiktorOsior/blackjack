@@ -1,12 +1,17 @@
 #root {
   max-width: 1280px;
   margin: 0 auto;
-  padding: 2rem;
+  padding: 2rem 2rem 0 2rem;
   text-align: center;
+  background-color: #242424;
 }
 
 .card {
   padding: 2em;
+}
+
+label{
+  height: fit-content;
 }
 
 .cards_list_all{
@@ -16,6 +21,9 @@
   flex-direction: row;
   flex-wrap: wrap;
   margin: 10px 0 10px 0;
+  padding: 5px 0 5px 0;
+  background-color: #272727;
+  border-radius: 5px;
 }
 .card_icon{
   height: 60px;
@@ -28,16 +36,26 @@
 }
 
 @media (max-width: 600px) {
+  #root{
+    padding: 0.5rem 0.5rem 0 0.5rem;
+  }
   .card_icon{
     height: 60px;
   }
   #buttons{
     display: grid;
-    grid-template-rows: 40px 40px;
+    grid-template-rows: 50px 50px;
+    position: sticky;
+    bottom: 0px;
+    width: 100%;
   }
   #buttons-row-1{
     display: grid;
     grid-template-columns: 50% 50%;
+  }
+  button{
+    color:white;
+    font-size: 20px;
   }
   #player-add-button{
     background-color: #205c2b;
@@ -55,5 +73,6 @@
     height: 100%;
     background-color: #6a1b1b;
     border: none;
+
   }
 }
