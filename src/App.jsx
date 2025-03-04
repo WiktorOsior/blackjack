@@ -16,7 +16,7 @@ import imgK from './assets/K.png'
 import imgA from './assets/A.png'
 
 
-const table = [
+const table_sums = [
     [8, "HIT", "HIT", "HIT", "HIT", "HIT", "HIT", "HIT", "HIT", "HIT", "HIT"],
     [9, "HIT", "DOUBLE DOWN", "DOUBLE DOWN", "DOUBLE DOWN", "DOUBLE DOWN", "HIT", "HIT", "HIT", "HIT", "HIT"],
     [10, "DOUBLE DOWN", "DOUBLE DOWN", "DOUBLE DOWN", "DOUBLE DOWN", "DOUBLE DOWN", "DOUBLE DOWN", "DOUBLE DOWN", "DOUBLE DOWN", "HIT", "HIT"],
@@ -71,10 +71,10 @@ const cards = [
 function App() {
 
     const [selected_list, setSelected] = useState([]);
-    const list_of_card_lists = ["d","p","p"]
+    let [lists_record, setRecord] = useState(["d", "p", "p"]);
 
     function create_list(id) {
-        let list = cards.map(card =>
+        return cards.map(card =>
             <div key={card.name}>
                 <input
                     name={"card" + id}
@@ -91,7 +91,6 @@ function App() {
                     <img className="card_icon" src={card.img} alt={card.name} id={card.name + id + "img"}/>
                 </label>
             </div>);
-        return list;
     }
 
     const handleChecking = (card_name, id) => {
@@ -143,78 +142,101 @@ function App() {
 
 
     function checkUpdates() {
-        if (!selected_list.includes("")&&selected_list.length>=3) {
+        if (!selected_list.includes("") && selected_list.length >= 3) {
             handleSubbmision();
         }
     }
 
     useEffect(() => {
         checkUpdates();
-        console.log("updated list", selected_list);
     }, [selected_list]);
 
     function handleSubbmision() {
         let player_sum = 0;
         let dealer_sum = 0;
-        let dealer = 0, player1 = 0, player2 = 0;
-        list_of_card_lists.map((c, i) => {
-            const card_value = document.querySelector(`input[name="card${i}"]:checked`).value
-            if (c === "p") {
-                player_sum += parseInt(card_value);
-                if (player1 === 0) {
-                    player1 = parseInt(card_value);
-                } else if (player2 === 0) {
-                    player2 = parseInt(card_value)
-                }
-            } else {
-                dealer_sum += parseInt(card_value);
-                if (dealer === 0) {
-                    dealer = parseInt(card_value);
+        let player_cards = [], dealer_cards = [];
+        lists_record.map((c, i) => {
+            if (i + 1 <= selected_list.length) {
+                const card_value = document.querySelector(`input[name="card${i}"]:checked`).value
+                if (c === "p") {
+                    player_sum += parseInt(card_value);
+                    player_cards.push(parseInt(card_value));
+                    while (player_sum > 21 && player_cards.includes(11)) {
+                        player_sum -= 10;
+                        player_cards[player_cards.indexOf(11)] -= 10;
+                    }
+                } else {
+                    dealer_sum += parseInt(card_value);
+                    dealer_cards.push(parseInt(card_value));
+                    while (dealer_sum > 21 && dealer_cards.includes(11)) {
+                        dealer_sum -= 10;
+                        dealer_cards[dealer_cards.indexOf(11)] -= 10;
+                    }
                 }
             }
         })
         const display = document.getElementById('display')
-        display.innerHTML = `Dealer: ${dealer_sum} Player: ${player_sum} ${tell_best_move(dealer, player1, player2)}`
+        if(player_sum>21||dealer_sum>21){
+            display.innerHTML = `Dealer: ${dealer_sum} Player: ${player_sum} BUSTED!`;
+        }else{
+            display.innerHTML = `Dealer: ${dealer_sum} Player: ${player_sum} ${tellBestMove(dealer_cards, dealer_sum, player_cards, player_sum)}`;
+        }
     }
 
     function renderLists(whose) {
-        let count = list_of_card_lists.length, list = [];
-        console.log(list_of_card_lists);
-        for(let i=0; i<count;i++) {
-            if (list_of_card_lists[i] === whose) {
-                list.push(<div className="cards_list_all" id={"d "+i}>{create_list(i)}</div>)
+        let count = lists_record.length, list = [];
+        for (let i = 0; i < count; i++) {
+            if (lists_record[i] === whose) {
+                list.push(<div className="cards_list_all" id={"d " + i}>{create_list(i)}</div>)
             }
         }
         return list;
     }
 
-    function tell_best_move(dealer, player1, player2) {
-        let player_sum = parseInt(player1) + parseInt(player2);
-        if (player1 === player2) {
-            for (let i = 0; i < 10; i++) {
-                if (table_pairs[i][0] === parseInt(player1)) {
-                    return table_pairs[i][dealer - 1];
-                }
-            }
-        } else if (parseInt(player1) === 11 || parseInt(player2) === 11) {
-            if (player_sum > 18) {
-                return "STAND";
-            }
-            for (let i = 0; i < 7; i++) {
-                if (table_aces[i][0] === player_sum) {
-                    return table_aces[i][dealer - 1];
+    function tellBestMove(dealer_cards, dealer_sum_b, player_cards, player_sum) {
+        let dealer_sum=dealer_sum_b;
+        if(dealer_sum_b>12){
+            dealer_sum = 11;
+        }
+        if (player_cards.length > 2 && player_cards.includes(11)) {
+                return searchAces(dealer_sum, player_sum);
+        }
+        if (player_cards[0] === player_cards[1]) {
+            return searchPairs(dealer_cards[0], player_cards[0]);
+        }
+        if (player_cards[0] === 11 || player_cards[1] === 11) {
+            return searchAces(dealer_cards, player_sum);
+        }
+        return searchSums(dealer_sum, player_sum);
+    }
 
-                }
+    function searchPairs(dealer_card, player_card) {
+        for (let i = 0; i < 10; i++) {
+            if (table_pairs[i][0] === player_card) {
+                return table_pairs[i][dealer_card - 1];
             }
+        }
+    }
+
+    function searchAces(dealer_sum, player_sum) {
+        if (player_sum > 18) {
+            return "STAND";
+        }
+        for (let i = 0; i < 7; i++) {
+            if (table_aces[i][0] === player_sum) {
+                return table_aces[i][dealer_sum - 1];
+
+            }
+        }
+    }
+
+    function searchSums(dealer_sum, player_sum) {
+        if (player_sum < 8) {
+            return "HIT";
+        } else if (player_sum > 17) {
+            return "STAND";
         } else {
-            if (player_sum < 8) {
-                return "HIT";
-            } else if (player_sum > 17) {
-                return "STAND";
-            } else {
-                return table[player_sum - 8][dealer - 1];
-            }
-
+            return table_sums[player_sum - 8][dealer_sum - 1];
         }
     }
 
@@ -231,7 +253,9 @@ function App() {
                 </div>
             </form>
             <div id="display"></div>
-            <button onClick={() => window.location.reload()}></button>
+            <button onClick={() => window.location.reload()}>Reset</button>
+            <button onClick={() => setRecord([...lists_record, "d"])}>Dealer</button>
+            <button onClick={() => setRecord([...lists_record, "p"])}>Player</button>
         </>
     )
 }

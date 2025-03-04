@@ -22,5 +22,14 @@
 }
 
 .inputs{
-  appearance: none;
+  display: none;
+}
+
+@media (max-width: 600px) {
+  .cards_list_all{
+    display: grid;
+    grid-template-rows: auto auto;
+    row-gap: 5px;
+    grid-template-columns:auto auto auto auto auto auto auto ;
+  }
 }
