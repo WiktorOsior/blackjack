@@ -26,7 +26,7 @@ label{
   border-radius: 5px;
 }
 .card_icon{
-  height: 60px;
+  height: 55px;
   margin: 5px;
   border-radius: 3px;
 }
@@ -36,8 +36,15 @@ label{
 }
 
 @media (max-width: 600px) {
+  body{
+    margin: 0;
+    background-color: #1e1e1e;
+  }
   #root{
-    padding: 0.5rem 0.5rem 0 0.5rem;
+    padding: 0;
+  }
+  main{
+    padding: 0px 5px 5px 5px ;
   }
   .card_icon{
     height: 60px;
@@ -59,9 +66,11 @@ label{
   }
   #player-add-button{
     background-color: #205c2b;
+    border-top-right-radius: 5px;
   }
   #dealer-add-button{
     background-color: #234178;
+    border-top-left-radius: 5px;
   }
   #player-add-button, #dealer-add-button{
     width:100%;
@@ -73,6 +82,26 @@ label{
     height: 100%;
     background-color: #6a1b1b;
     border: none;
+    border-bottom-left-radius:5px;
+    border-bottom-right-radius:5px;
 
+  }
+  header{
+    position: sticky;
+    top: 0px;
+    height: 55px;
+    width: 100%;
+    display: grid;
+    grid-template-rows: 50% 50%;
+    background-color: #1e1e1e;
+    align-items: center;
+    justify-content: center;
+    padding: 5px 0 5px 0;
+  }
+  header p{
+    display: inline-block;
+    width:fit-content;
+    margin: 0;
+    padding: 0 5px 0 5px;
   }
 }

@@ -175,11 +175,15 @@ function App() {
                 }
             }
         })
-        const display = document.getElementById('display')
+        const display_player = document.getElementById('player-display')
+        const display_dealer = document.getElementById('dealer-display')
+        const display_move = document.getElementById('move-display')
+        display_player.innerHTML = `${player_sum}`;
+        display_dealer.innerHTML = `${dealer_sum}`;
         if (player_sum > 21 || dealer_sum > 21) {
-            display.innerHTML = `Dealer: ${dealer_sum} Player: ${player_sum} BUSTED!`;
+            display_move.innerHTML =`BUSTED!`;
         } else {
-            display.innerHTML = `Dealer: ${dealer_sum} Player: ${player_sum} ${tellBestMove(dealer_cards, dealer_sum, player_cards, player_sum)}`;
+            display_move.innerHTML =`${tellBestMove(dealer_cards,dealer_sum,player_cards,player_sum)}`;
         }
     }
 
@@ -242,24 +246,43 @@ function App() {
 
     return (
         <>
+            <header>
+                <div>
+                    <p>
+                        Player sum:
+                    </p>
+                    <p id = "player-display">  </p>
+                    <p>
+                        Dealer sum:
+                    </p>
+                    <p id = "dealer-display">  </p>
+                </div>
+                <div>
+                    <p>
+                        Your best option:
+                    </p>
+                    <p id="move-display">  </p>
+                </div>
+            </header>
+            <main>
             <form>
-                <h1>Enter dealers card</h1>
-                <div id="dealer-lists">
-                    {renderLists("d")}
+                    <h1>Enter dealers card</h1>
+                    <div id="dealer-lists">
+                        {renderLists("d")}
+                    </div>
+                    <h1>Enter player card</h1>
+                    <div id="players-lists">
+                        {renderLists("p")}
+                    </div>
+                </form>
+                <div id="buttons">
+                    < div id="buttons-row-1">
+                        <button id="dealer-add-button" onClick={() => setRecord([...lists_record, "d"])}>Dealer</button>
+                        <button id="player-add-button" onClick={() => setRecord([...lists_record, "p"])}>Player</button>
+                    </div>
+                    <button id="reset-button" onClick={() => window.location.reload()}>Reset</button>
                 </div>
-                <h1>Enter player card</h1>
-                <div id="players-lists">
-                    {renderLists("p")}
-                </div>
-            </form>
-            <div id="display"></div>
-            <div id="buttons">
-                < div id="buttons-row-1">
-                    <button id="player-add-button" onClick={() => setRecord([...lists_record, "p"])}>Player</button>
-                    <button id="dealer-add-button" onClick={() => setRecord([...lists_record, "d"])}>Dealer</button>
-                </div>
-                <button id="reset-button" onClick={() =>window.location.reload() }>Reset</button>
-            </div>
+            </main>
         </>
     )
 }
