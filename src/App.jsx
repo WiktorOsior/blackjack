@@ -181,9 +181,9 @@ function App() {
         display_player.innerHTML = `${player_sum}`;
         display_dealer.innerHTML = `${dealer_sum}`;
         if (player_sum > 21 || dealer_sum > 21) {
-            display_move.innerHTML =`BUSTED!`;
+            display_move.innerHTML = `BUSTED!`;
         } else {
-            display_move.innerHTML =`${tellBestMove(dealer_cards,dealer_sum,player_cards,player_sum)}`;
+            display_move.innerHTML = `${tellBestMove(dealer_cards, dealer_sum, player_cards, player_sum)}`;
         }
     }
 
@@ -205,10 +205,10 @@ function App() {
         if (player_cards.length > 2 && player_cards.includes(11)) {
             return searchAces(dealer_sum, player_sum);
         }
-        if (player_cards[0] === player_cards[1]) {
+        if (player_cards[0] === player_cards[1] && player_cards.length === 2) {
             return searchPairs(dealer_cards[0], player_cards[0]);
         }
-        if (player_cards[0] === 11 || player_cards[1] === 11) {
+        if ((player_cards[0] === 11 || player_cards[1] === 11) && player_cards.length === 2) {
             return searchAces(dealer_cards, player_sum);
         }
         return searchSums(dealer_sum, player_sum);
@@ -247,40 +247,46 @@ function App() {
     return (
         <>
             <header>
-                <div>
-                    <p>
-                        Player sum:
-                    </p>
-                    <p id = "player-display">  </p>
-                    <p>
-                        Dealer sum:
-                    </p>
-                    <p id = "dealer-display">  </p>
-                </div>
-                <div>
-                    <p>
-                        Your best option:
-                    </p>
-                    <p id="move-display">  </p>
+                <div id="header-container">
+                    <div className="header-row">
+                        <p>
+                            Player:
+                        </p>
+                        <p id="player-display"></p>
+                        <p>
+                            Dealer:
+                        </p>
+                        <p id="dealer-display"></p>
+                    </div>
+                    <div className="header-row">
+                        <p>
+                            Best Move:
+                        </p>
+                        <p id="move-display"></p>
+                    </div>
                 </div>
             </header>
             <main>
-            <form>
-                    <h1>Enter dealers card</h1>
+                <form>
+                    <h1>Enter dealer's cards</h1>
                     <div id="dealer-lists">
                         {renderLists("d")}
                     </div>
-                    <h1>Enter player card</h1>
+                    <h1>Enter player's cards</h1>
                     <div id="players-lists">
                         {renderLists("p")}
                     </div>
                 </form>
-                <div id="buttons">
-                    < div id="buttons-row-1">
-                        <button id="dealer-add-button" onClick={() => setRecord([...lists_record, "d"])}>Dealer</button>
-                        <button id="player-add-button" onClick={() => setRecord([...lists_record, "p"])}>Player</button>
+                <div id="buttons-container">
+                    <div id="buttons">
+                        < div id="buttons-row-1">
+                            <button id="dealer-add-button" onClick={() => setRecord([...lists_record, "d"])}>Dealer
+                            </button>
+                            <button id="player-add-button" onClick={() => setRecord([...lists_record, "p"])}>Player
+                            </button>
+                        </div>
+                        <button id="reset-button" onClick={() => window.location.reload()}>Reset</button>
                     </div>
-                    <button id="reset-button" onClick={() => window.location.reload()}>Reset</button>
                 </div>
             </main>
         </>
